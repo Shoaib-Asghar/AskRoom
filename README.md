@@ -133,6 +133,7 @@ I used AI coding assistants to help speed up development for this assessment. My
 - **Authentication:** Dropped NextAuth. Anyone can join with any display name.
 - **Client State Management:** Used raw React hooks (`useState`/`useRef`) instead of Redux/Zustand since the only global state needed is the socket connection and chat history.
 - **Heavy SDKs:** Used raw `fetch` for the Cohere API instead of their heavy SDK to keep the bundle size small and demonstrate an understanding of the underlying REST API.
+- **Comprehensive Testing:** Relied on a curated smoke-test evaluation script (`eval.ts`) instead of a full automated test suite (chunking unit tests, WebSocket integration, and precision/recall metrics).
 
 **What I prioritized:**
 - **Defensive RAG:** I spent extra time building the `Retrieval Inspector` UI and handling the prompt-injection traps because RAG accuracy is the most critical feature.
