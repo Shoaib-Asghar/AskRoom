@@ -1,5 +1,5 @@
-import db from './index.js';
-import type { Message } from '../types/socket.js';
+import db from '../index.js';
+import type { Message } from '../../types/socket.js';
 
 export function saveMessage(message: Omit<Message, 'id'>): Message {
   const stmt = db.prepare(`

@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import { setupSocketHandlers } from './socket/handler.js';
-import { initDb } from './db/index.js';
+import { ingestDocuments } from './rag/ingest.js';
 import type { ClientToServerEvents, ServerToClientEvents } from './types/socket.js';
 
 // Load environment variables
@@ -13,8 +13,8 @@ dotenv.config({ path: '../.env' });
 const app = express();
 const server = createServer(app);
 
-// Initialize Database
-initDb();
+// Initialize Database & RAG Documents
+ingestDocuments();
 
 // Allow any origin for local development convenience to avoid port dancing issues
 app.use(cors({

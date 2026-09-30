@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import type { ClientToServerEvents, ServerToClientEvents, Message } from '../types/socket.js';
 import * as roomManager from './roomManager.js';
-import * as dbQueries from '../db/queries.js';
+import * as dbQueries from '../db/repositories/messages.js';
 
 export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToClientEvents>) {
   io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {

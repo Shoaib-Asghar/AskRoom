@@ -44,14 +44,17 @@ export function initDb() {
   `);
 
   // 3. Chunks table for RAG Embeddings
-  // We store the embedding as a BLOB (Float32Array buffer)
   db.exec(`
     CREATE TABLE IF NOT EXISTS chunks (
-      id TEXT PRIMARY KEY,
-      documentId TEXT NOT NULL,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      doc_file TEXT NOT NULL,
+      doc_title TEXT NOT NULL,
+      doc_date TEXT,
+      doc_type TEXT NOT NULL DEFAULT 'policy',
+      section TEXT NOT NULL,
+      breadcrumb TEXT NOT NULL,
       content TEXT NOT NULL,
-      embedding BLOB,
-      FOREIGN KEY (documentId) REFERENCES documents(id) ON DELETE CASCADE
+      embedding BLOB
     );
   `);
 
