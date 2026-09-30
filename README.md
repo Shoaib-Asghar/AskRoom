@@ -106,8 +106,8 @@ During ingestion, we implemented specific defenses against traps planted in the 
 
 Our automated evaluation suite runs difficult edge cases against the retrieval pipeline to guarantee it doesn't fall for prompt injections or conflicting legacy documents.
 
-![Eval Suite CLI Output - Part 1](./docs/eval1.png)
-![Eval Suite CLI Output - Part 2](./docs/eval2.png)
+![Eval Suite CLI Output - Part 1](./docs/eval1.PNG)
+![Eval Suite CLI Output - Part 2](./docs/eval2.PNG)
 
 | Question | Status | Top Sources | Answer Snippet |
 | :--- | :--- | :--- | :--- |
