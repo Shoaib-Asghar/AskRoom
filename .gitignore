@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.db
+.next/
+dist/
+.DS_Store
+
+.agents/
+temp/
