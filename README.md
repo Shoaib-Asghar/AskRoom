@@ -45,4 +45,5 @@ pnpm dev
 Open `http://localhost:3000` in multiple browser windows to test the real-time chat functionality!
 
 ---
+
 *(Architecture, RAG Decisions, and Eval Results will be added in later iterations)*
