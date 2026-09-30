@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import type { ClientToServerEvents, ServerToClientEvents, Message } from '../types/socket.js';
 import * as roomManager from './roomManager.js';
+import * as dbQueries from '../db/queries.js';
 
 export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToClientEvents>) {
   io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
@@ -24,12 +25,12 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
       socket.to(roomId).emit('room:user_joined', { displayName });
       
       // Send the current room state back to the joining user
-      // TODO (Iter 2): Fetch actual history from SQLite
       const members = roomManager.getRoomMembers(roomId);
+      const history = dbQueries.getRoomHistory(roomId);
       socket.emit('room:joined', { 
         roomId, 
         members,
-        history: [] // Mock history for now
+        history
       });
       
       console.log(`[${roomId}] ${displayName} joined`);
@@ -45,15 +46,16 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
       }
 
       // Construct the message object
-      const message: Message = {
+      const messageData = {
         roomId,
         displayName,
         content,
-        messageType: 'user',
+        messageType: 'user' as const,
         createdAt: new Date().toISOString()
       };
 
-      // TODO (Iter 2): Save message to SQLite
+      // Save message to SQLite
+      const message = dbQueries.saveMessage(messageData);
       
       // Broadcast to everyone in the room (including sender, or sender can rely on ack/optimistic UI, but here we broadcast to all for simplicity)
       // Actually, standard chat usually broadcasts to others and acks sender, but broadcasting to the room via io.to() is easiest.
