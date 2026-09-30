@@ -8,17 +8,21 @@ export interface ChunkInsert {
   section: string;
   breadcrumb: string;
   content: string;
+  embedding?: Buffer;
 }
 
 export function saveChunk(chunk: ChunkInsert) {
   const stmt = db.prepare(`
     INSERT INTO chunks (
-      doc_file, doc_title, doc_date, doc_type, section, breadcrumb, content
+      doc_file, doc_title, doc_date, doc_type, section, breadcrumb, content, embedding
     ) VALUES (
-      @doc_file, @doc_title, @doc_date, @doc_type, @section, @breadcrumb, @content
+      @doc_file, @doc_title, @doc_date, @doc_type, @section, @breadcrumb, @content, @embedding
     )
   `);
-  stmt.run(chunk);
+  stmt.run({
+    ...chunk,
+    embedding: chunk.embedding || null
+  });
 }
 
 export function clearChunks() {
