@@ -4,6 +4,11 @@ import { use, useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSocket } from "../../../hooks/useSocket";
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { socket } from '../../../lib/socket';
+import AIStreamMessage from '../../../components/AIStreamMessage';
+
 export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
   const resolvedParams = use(params);
   const roomId = resolvedParams.roomId;
@@ -24,7 +29,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     }
   }, [displayName, router]);
 
-  const { isConnected, members, messages, error, sendMessage } = useSocket(
+  const { isConnected, members, messages, error, activeAiStream, sendMessage } = useSocket(
     roomId, 
     displayName || "Anonymous"
   );
@@ -32,7 +37,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, activeAiStream]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,11 +98,44 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
           {messages.map((msg, i) => {
             const isMe = msg.displayName === displayName && msg.messageType === 'user';
             const isSystem = msg.messageType === 'system';
+            const isAi = msg.messageType === 'ai';
             
             if (isSystem) {
               return (
                 <div key={msg.id || i} className="text-center text-xs opacity-50 my-2">
                   {msg.content}
+                </div>
+              );
+            }
+
+            if (isAi) {
+              let parsedSources: any[] = [];
+              try {
+                parsedSources = msg.sources ? JSON.parse(msg.sources) : [];
+              } catch (e) {
+                // ignore
+              }
+              
+              return (
+                <div key={msg.id || i} className="flex flex-col items-start w-full">
+                  <span className="text-xs opacity-70 mb-1 mx-1 font-bold text-blue-400">🤖 {msg.displayName}</span>
+                  <div className="px-5 py-3 rounded-2xl max-w-[90%] border border-blue-500/30 bg-blue-500/10 rounded-tl-none prose prose-invert prose-sm">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {msg.content}
+                    </ReactMarkdown>
+                    {parsedSources && parsedSources.length > 0 && (
+                      <div className="mt-4 pt-2 border-t border-blue-500/20 text-xs text-blue-300">
+                        <div className="font-semibold mb-1">Sources:</div>
+                        <ul className="list-disc pl-4 space-y-1">
+                          {parsedSources.map((source, idx) => (
+                            <li key={idx}>
+                              [{source.doc_title} § {source.breadcrumb.split(' > ').pop()}]
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             }
@@ -115,6 +153,21 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
               </div>
             );
           })}
+          
+          {/* Active AI Stream */}
+          {activeAiStream && (
+            <div className="flex flex-col items-start w-full mt-4">
+               <span className="text-xs opacity-70 mb-1 mx-1 font-bold text-blue-400 animate-pulse">🤖 AskRoom AI is thinking...</span>
+               <div className="w-full max-w-[90%] border border-blue-500/50 bg-blue-500/20 rounded-2xl rounded-tl-none p-0 overflow-hidden">
+                 <AIStreamMessage 
+                   questionId={activeAiStream.questionId}
+                   isStreaming={true}
+                   socket={socket}
+                 />
+               </div>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
 

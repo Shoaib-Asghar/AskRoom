@@ -7,6 +7,7 @@ export function useSocket(roomId: string, displayName: string) {
   const [members, setMembers] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [activeAiStream, setActiveAiStream] = useState<{ questionId: string } | null>(null);
   
   // Ref to track if we've already joined to prevent duplicate joins on strict mode double-renders
   const hasJoined = useRef(false);
@@ -89,6 +90,22 @@ export function useSocket(roomId: string, displayName: string) {
     socket.on('message', onMessage);
     socket.on('error', onError);
 
+    const onAiThinking = (payload: { questionId: string }) => {
+      setActiveAiStream({ questionId: payload.questionId });
+    };
+    const onAiDone = () => {
+      // The final message is sent via 'message' event, so we just clear the stream state
+      setActiveAiStream(null);
+    };
+    const onAiError = (payload: { questionId: string; error: string }) => {
+      setActiveAiStream(null);
+      setError(payload.error);
+    };
+
+    socket.on('ai:thinking', onAiThinking);
+    socket.on('ai:done', onAiDone);
+    socket.on('ai:error', onAiError);
+
     // Connect to the socket server if not already connected
     if (!socket.connected) {
       socket.connect();
@@ -105,6 +122,9 @@ export function useSocket(roomId: string, displayName: string) {
       socket.off('room:user_left', onUserLeft);
       socket.off('message', onMessage);
       socket.off('error', onError);
+      socket.off('ai:thinking', onAiThinking);
+      socket.off('ai:done', onAiDone);
+      socket.off('ai:error', onAiError);
       
       // Removed socket.disconnect() to prevent React StrictMode from killing the socket during development.
     };
@@ -116,5 +136,5 @@ export function useSocket(roomId: string, displayName: string) {
     }
   }, [roomId]);
 
-  return { isConnected, members, messages, error, sendMessage };
+  return { isConnected, members, messages, error, activeAiStream, sendMessage };
 }
