@@ -43,6 +43,7 @@ export async function rerank(
     
     // Cohere v3 often returns unbounded logits instead of normalized [0,1] probabilities.
     // We apply a sigmoid function to normalize the scores into a neat percentage for the UI.
+    // TODO: Define a strict TypeScript interface for Cohere's JSON response instead of using any
     const rerankedChunks = data.results.map((result: any) => {
       const originalChunk = chunks[result.index];
       
@@ -58,7 +59,7 @@ export async function rerank(
 
     return { chunks: rerankedChunks, usedReranker: true };
 
-  } catch (error: any) {
+  } catch (error: any) { // TODO: Define strict Error types for fetch failures
     console.warn("[Defensive Fallback] Reranker failed, using vector scores:", error.message);
     return { chunks: chunks.slice(0, finalTopK), usedReranker: false };
   }

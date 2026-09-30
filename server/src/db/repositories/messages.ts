@@ -30,6 +30,7 @@ export function getRoomHistory(roomId: string, limit: number = 50): Message[] {
     LIMIT ?
   `);
 
+  // TODO: Define a strict TypeScript interface for SQLite message rows
   const rows = stmt.all(roomId, limit) as any[];
 
   return rows.map(row => ({

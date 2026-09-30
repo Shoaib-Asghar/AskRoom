@@ -19,6 +19,7 @@ export interface ScoredChunk {
 let cachedChunks: (Omit<ScoredChunk, 'score'> & { embeddingArray: number[] })[] | null = null;
 
 export function loadChunksIntoMemory() {
+  // TODO: Define a strict TypeScript interface for SQLite chunk rows
   const rows = db.prepare('SELECT * FROM chunks').all() as any[];
   
   cachedChunks = rows.map(row => {

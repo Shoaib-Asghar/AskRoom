@@ -154,8 +154,7 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
 
             io.to(roomId).emit('ai:done', { questionId, sources });
             io.to(roomId).emit('message', { message: savedAiMessage });
-
-          } catch (error: any) {
+          } catch (error: any) { // TODO: Narrow error type from unknown to specific Error class
             console.error(`[${roomId}] AI Error:`, error);
             io.to(roomId).emit('ai:error', { 
               questionId, 

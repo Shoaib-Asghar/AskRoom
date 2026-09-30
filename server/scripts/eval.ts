@@ -81,7 +81,7 @@ async function runEval() {
     md += `| ${r.query} | ${r.status} | ${safeSources} | ${safeAnswer}... |\n`;
   }
 
-  const outPath = path.join(process.cwd(), '..', 'eval', 'RAG_TEST_NOTES.md');
+  const outPath = path.join(process.cwd(), '..', 'docs', 'RAG_TEST_NOTES.md');
   fs.writeFileSync(outPath, md);
   console.log(`\n✅ Evaluation complete. Results saved to ${outPath}`);
 }
