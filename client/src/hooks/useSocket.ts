@@ -79,6 +79,10 @@ export function useSocket(roomId: string, displayName: string) {
 
     const onError = (payload: { message: string }) => {
       setError(payload.message);
+      // Auto-clear error after 5 seconds so it doesn't get stuck permanently
+      setTimeout(() => {
+        setError((prev) => (prev === payload.message ? null : prev));
+      }, 5000);
     };
 
     // Attach listeners first
@@ -100,6 +104,9 @@ export function useSocket(roomId: string, displayName: string) {
     const onAiError = (payload: { questionId: string; error: string }) => {
       setActiveAiStream(null);
       setError(payload.error);
+      setTimeout(() => {
+        setError((prev) => (prev === payload.error ? null : prev));
+      }, 5000);
     };
 
     socket.on('ai:thinking', onAiThinking);
