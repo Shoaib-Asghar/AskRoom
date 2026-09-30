@@ -106,6 +106,7 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
               doc_file: c.doc_file,
               doc_title: c.doc_title,
               breadcrumb: c.breadcrumb,
+              content: c.content,
               score: c.score
             }));
 

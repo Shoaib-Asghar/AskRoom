@@ -29,6 +29,7 @@ export interface Source {
   doc_file: string;
   doc_title: string;
   breadcrumb: string;
+  content: string;
   score: number;
 }
 
