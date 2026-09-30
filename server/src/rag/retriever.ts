@@ -1,6 +1,7 @@
 import db from '../db/index.js';
 import { embedText } from './embedder.js';
 import { cosineSimilarity } from '../utils/cosine.js';
+import { rerank } from './reranker.js';
 
 export interface ScoredChunk {
   id: number;
@@ -44,7 +45,7 @@ export function loadChunksIntoMemory() {
   console.log(`[Retriever] Loaded ${cachedChunks.length} embedded chunks into memory.`);
 }
 
-export async function retrieve(query: string, topK: number = 5): Promise<ScoredChunk[]> {
+export async function retrieve(query: string, finalTopK: number = 5): Promise<{ chunks: ScoredChunk[], usedReranker: boolean }> {
   if (!cachedChunks) {
     loadChunksIntoMemory();
   }
@@ -69,6 +70,12 @@ export async function retrieve(query: string, topK: number = 5): Promise<ScoredC
     });
   }
   
+  // Sort descending by vector similarity
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, topK);
+  
+  // Take top 15 candidates for reranking
+  const topCandidates = scored.slice(0, 15);
+  
+  // Rerank using Cohere (will fall back to vector scores if disabled/fails)
+  return await rerank(query, topCandidates, finalTopK);
 }

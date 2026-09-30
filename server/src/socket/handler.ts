@@ -112,7 +112,7 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
 
           try {
             // 1. Retrieve Context
-            const chunks = await retrieve(query, 5);
+            const { chunks, usedReranker } = await retrieve(query, 5);
 
             // 2. Fetch Room History
             const history = dbQueries.getRoomHistory(roomId);
@@ -137,7 +137,8 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
               doc_title: c.doc_title,
               breadcrumb: c.breadcrumb,
               content: c.content,
-              score: c.score
+              score: c.score,
+              usedReranker // Pass this to the client for the inspector
             }));
 
             const aiMessageData = {

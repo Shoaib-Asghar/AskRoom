@@ -26,6 +26,11 @@ export default function SourceCitation({ source, index }: SourceCitationProps) {
           <span className="truncate text-gray-700">{source.breadcrumb.split(' > ').pop()}</span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+          {source.usedReranker && (
+            <span className="text-[9px] uppercase tracking-wider bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-bold" title="Score provided by Cohere Rerank API">
+              Reranked
+            </span>
+          )}
           <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${source.score > 0.8 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800'}`}>
             {(source.score * 100).toFixed(1)}% match
           </span>

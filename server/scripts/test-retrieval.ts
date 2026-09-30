@@ -5,9 +5,9 @@ async function main() {
   console.log(`\n🔍 Query: "${query}"\n`);
 
   try {
-    const results = await retrieve(query, 5);
+    const { chunks: results, usedReranker } = await retrieve(query, 5);
     
-    console.log(`✅ Retrieved top ${results.length} chunks:\n`);
+    console.log(`✅ Retrieved top ${results.length} chunks (Reranker used: ${usedReranker}):\n`);
     
     results.forEach((chunk, index) => {
       console.log(`[${index + 1}] Score: ${chunk.score.toFixed(4)}`);

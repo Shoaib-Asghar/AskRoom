@@ -31,6 +31,7 @@ export interface Source {
   breadcrumb: string;
   content: string;
   score: number;
+  usedReranker?: boolean;
 }
 
 export interface ServerToClientEvents {
